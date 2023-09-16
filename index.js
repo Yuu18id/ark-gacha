@@ -45,7 +45,7 @@ class Gacha {
                     charData.subProfessionId !== "notchar2" &&
                     charData.isNotObtainable === false
                 ) {
-                    this.op[charData.rarity + 'star'].push({ "name": charData.name, "img": key });
+                    this.op[charData.rarity + 1 + 'star'].push({ "name": charData.name, "img": key });
                 }
             }
         }
@@ -62,15 +62,15 @@ class Gacha {
             const div = document.createElement("div");
             div.className = "res mx-1";
             const rate = Math.random() * 100;
-            let rarity = 1;
+            let rarity = 0;
 
             if (rate < 2) {
                 rarity = 6;
-            } else if (rate < 16) {
+            } else if (rate > 2 && rate < 16) {
                 rarity = 5;
-            } else if (rate < 51) {
+            } else if (rate > 16 && rate < 51) {
                 rarity = 4;
-            } else {
+            } else if (rate > 51) {
                 rarity = 3;
             }
 
