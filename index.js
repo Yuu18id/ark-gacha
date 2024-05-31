@@ -39,19 +39,7 @@ class Gacha {
             if (key.startsWith("char")) {
                 const charData = data[key];
                 //console.log(charData)
-                if (
-                    charData.rarity == "TIER_1" ||
-                    charData.rarity == "TIER_2" ||
-                    charData.rarity == "TIER_3" ||
-                    charData.rarity == "TIER_4" ||
-                    charData.rarity == "TIER_5" ||
-                    charData.rarity == "TIER_6" &&
-                    charData.description !== null &&
-                    charData.subProfessionId !== "notchar1" &&
-                    charData.subProfessionId !== "notchar2" &&
-                    charData.isNotObtainable === false &&
-                    charData.maxPotentialLevel === 0
-                ) {
+                if (charData.itemObtainApproach === "Recruitment & Headhunting") {
                     this.op[charData.rarity].push({ "name": charData.name, "img": key });
                 }
             }
@@ -71,17 +59,18 @@ class Gacha {
             const rate = Math.random() * 100;
             let rarity = 0;
 
-            if (rate < 2) {
+            if (rate < 2 && rate > 0) {
                 rarity = "TIER_6";
-            } else if (rate > 2 && rate < 16) {
+            } else if (rate >= 2 && rate <= 16) {
                 rarity = "TIER_5";
             } else if (rate > 16 && rate < 51) {
                 rarity = "TIER_4";
-            } else if (rate > 51) {
+            } else if (rate >= 51) {
                 rarity = "TIER_3";
             }
 
             const randomStar = this.op[rarity][Math.floor(Math.random() * this.op[rarity].length)];
+            console.log(randomStar)
             const get = { "name": randomStar["name"], "img": randomStar["img"] };
             this.own[rarity].push(get);
 
