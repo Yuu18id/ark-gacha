@@ -75,9 +75,11 @@ class Gacha {
             this.own[rarity].push(get);
 
             const img = document.createElement("img");
-            img.src = "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/" + randomStar["img"] + "_1.png";
+            img.src = "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/characters/" + randomStar["img"] + "_1.png";
             img.width = 90;
             img.height = 160;
+            img.style.objectFit = "cover"
+            img.style.objectPosition = "top"
 
             const paragraph = document.createElement("p");
             paragraph.textContent = "★" + rarity.charAt(rarity.length - 1) + "\t" + get["name"] + "\n";
