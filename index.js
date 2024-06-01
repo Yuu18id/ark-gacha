@@ -71,6 +71,7 @@ class Gacha {
             img.height = 160;
             img.style.objectFit = "cover";
             img.style.objectPosition = "top";
+            img.loading = "lazy";
 
             switch (rarity[rarity.length - 1]) {
                 case '6':
@@ -161,6 +162,7 @@ class Gacha {
         operatorImg.style.width = "100%";
         operatorImg.style.objectFit = "cover";
         operatorImg.style.objectPosition = "top";
+        operatorImg.loading = "lazy";
 
         const modalContent = document.querySelector(".modal-content");
         switch (rarity) {
