@@ -45,6 +45,7 @@ class Gacha {
     }
 
     async gacha(pull) {
+        this.result.innerHTML = ""
         this.get.length = 0;
         await this.fetchData();
 
@@ -54,6 +55,7 @@ class Gacha {
         for (let i = 0; i < pull; i++) {
             const div = document.createElement("div");
             div.className = "res mx-1";
+            
             const rate = Math.random() * 100;
             const rarity = this.determineRarity(rate);
 
@@ -69,6 +71,24 @@ class Gacha {
             img.height = 160;
             img.style.objectFit = "cover";
             img.style.objectPosition = "top";
+
+            switch (rarity[rarity.length - 1]) {
+                case '6':
+                    div.style.backgroundColor = "#fed54a";
+                    break;
+                case '5':
+                    div.style.backgroundColor = "#ffedcc";
+                    break;
+                case '4':
+                    div.style.backgroundColor = "#c0a8f7";
+                    break;
+                default:
+                    div.style.backgroundColor = "#fff";
+            }
+            div.style.borderRadius = "5px"
+            div.style.boxShadow = "black"
+            div.style.padding = "2%"
+            div.className = "card mt-4 mx-auto"
 
             const paragraph = document.createElement("p");
             paragraph.textContent = `★${rarity.charAt(rarity.length - 1)}\t${get.name}\n`;
@@ -145,15 +165,19 @@ class Gacha {
         const modalContent = document.querySelector(".modal-content");
         switch (rarity) {
             case '6':
+                operatorImg.style.backgroundColor = "#fed54a";
                 modalContent.style.backgroundColor = "#fed54a";
                 break;
             case '5':
+                operatorImg.style.backgroundColor = "#ffedcc";
                 modalContent.style.backgroundColor = "#ffedcc";
                 break;
             case '4':
+                operatorImg.style.backgroundColor = "#c0a8f7";
                 modalContent.style.backgroundColor = "#c0a8f7";
                 break;
             default:
+                operatorImg.style.backgroundColor = "#fff";
                 modalContent.style.backgroundColor = "#fff";
         }
     }
