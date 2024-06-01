@@ -1,23 +1,22 @@
 class Gacha {
     constructor() {
-        this.op = {
-            'TIER_6': [],
-            'TIER_5': [],
-            'TIER_4': [],
-            'TIER_3': [],
-            'TIER_2': [],
-            'TIER_1': []
-        };
-        this.own = {
-            'TIER_6': [],
-            'TIER_5': [],
-            'TIER_4': [],
-            'TIER_3': [],
-            'TIER_2': [],
-            'TIER_1': []
-        };
-        this.result = document.querySelector(".result")
+        this.op = this.initializeTiers();
+        this.own = this.initializeTiers();
+        this.get = [];
+        this.result = document.querySelector(".result");
         this.dataFetched = false;
+        this.currentIndex = 0;
+    }
+
+    initializeTiers() {
+        return {
+            'TIER_6': [],
+            'TIER_5': [],
+            'TIER_4': [],
+            'TIER_3': [],
+            'TIER_2': [],
+            'TIER_1': []
+        };
     }
 
     async fetchData() {
@@ -25,7 +24,6 @@ class Gacha {
             try {
                 const response = await fetch('https://raw.githubusercontent.com/Aceship/AN-EN-Tags/master/json/gamedata/en_US/gamedata/excel/character_table.json');
                 const data = await response.json();
-                //console.log(data)
                 this.processData(data);
                 this.dataFetched = true;
             } catch (error) {
@@ -38,16 +36,16 @@ class Gacha {
         for (const key in data) {
             if (key.startsWith("char")) {
                 const charData = data[key];
-                //console.log(charData)
                 if (charData.itemObtainApproach === "Recruitment & Headhunting") {
-                    this.op[charData.rarity].push({ "name": charData.name, "img": key });
+                    this.op[charData.rarity].push({ name: charData.name, img: key });
                 }
             }
         }
-        console.log(this.op)
+        console.log(this.op);
     }
 
     async gacha(pull) {
+        this.get.length = 0;
         await this.fetchData();
 
         const existingRes = document.querySelectorAll(".res");
@@ -57,50 +55,112 @@ class Gacha {
             const div = document.createElement("div");
             div.className = "res mx-1";
             const rate = Math.random() * 100;
-            let rarity = 0;
-
-            if (rate < 2 && rate > 0) {
-                rarity = "TIER_6";
-            } else if (rate >= 2 && rate <= 16) {
-                rarity = "TIER_5";
-            } else if (rate > 16 && rate < 51) {
-                rarity = "TIER_4";
-            } else if (rate >= 51) {
-                rarity = "TIER_3";
-            }
+            const rarity = this.determineRarity(rate);
 
             const randomStar = this.op[rarity][Math.floor(Math.random() * this.op[rarity].length)];
-            console.log(randomStar)
-            const get = { "name": randomStar["name"], "img": randomStar["img"] };
+            console.log(randomStar);
+            const get = { name: randomStar.name, img: randomStar.img, rarity: rarity[rarity.length - 1] };
             this.own[rarity].push(get);
+            this.get.push(get);
 
             const img = document.createElement("img");
-            img.src = "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/characters/" + randomStar["img"] + "_1.png";
+            img.src = `https://raw.githubusercontent.com/Aceship/Arknight-Images/main/characters/${randomStar.img}_1.png`;
             img.width = 90;
             img.height = 160;
-            img.style.objectFit = "cover"
-            img.style.objectPosition = "top"
+            img.style.objectFit = "cover";
+            img.style.objectPosition = "top";
 
             const paragraph = document.createElement("p");
-            paragraph.textContent = "★" + rarity.charAt(rarity.length - 1) + "\t" + get["name"] + "\n";
+            paragraph.textContent = `★${rarity.charAt(rarity.length - 1)}\t${get.name}\n`;
 
             div.appendChild(img);
             div.appendChild(paragraph);
             this.result.appendChild(div);
+
+            console.log(this.get);
         }
+        this.showGacha(this.get);
+    }
+
+    determineRarity(rate) {
+        if (rate < 2) return "TIER_6";
+        if (rate <= 16) return "TIER_5";
+        if (rate < 51) return "TIER_4";
+        return "TIER_3";
     }
 
     inventory() {
         const existP = document.body.querySelector('p');
-        if (existP) {
-            existP.remove();
-        }
+        if (existP) existP.remove();
 
         const invenP = document.createElement("p");
         invenP.textContent = JSON.stringify(this.own);
         document.body.appendChild(invenP);
     }
-    
+
+    showGacha(list) {
+        const modalBody = document.querySelector(".modal-body");
+        modalBody.innerHTML = "";
+
+        if (list.length > 0) {
+            this.currentIndex = 0;
+
+            const operatorName = document.createElement("p");
+            const operatorImg = document.createElement("img");
+            const operatorRarity = document.createElement("p");
+
+            this.updateModalContent(list, operatorName, operatorRarity, operatorImg);
+            modalBody.appendChild(operatorName);
+            modalBody.appendChild(operatorRarity);
+            modalBody.appendChild(operatorImg);
+
+            const showNextOperator = () => {
+                this.currentIndex++;
+                if (this.currentIndex < list.length) {
+                    this.updateModalContent(list, operatorName, operatorRarity, operatorImg);
+                    console.log(this.currentIndex);
+                } else {
+                    const modal = bootstrap.Modal.getInstance(document.querySelector("#recruitment"));
+                    modal.hide();
+                    modalBody.removeEventListener("click", showNextOperator);
+                }
+            };
+            modalBody.addEventListener("click", showNextOperator);
+        }
+    }
+
+    updateModalContent(list, operatorName, operatorRarity, operatorImg) {
+        const rarity = list[this.currentIndex].rarity;
+        const charRarity = this.getRarityStars(rarity);
+        operatorName.textContent = list[this.currentIndex].name;
+        operatorRarity.textContent = charRarity;
+        operatorImg.src = `https://raw.githubusercontent.com/Aceship/Arknight-Images/main/characters/${list[this.currentIndex].img}_1.png`;
+        operatorImg.style.display = "block";
+        operatorImg.style.margin = "0 auto";
+        operatorImg.style.height = "60%";
+        operatorImg.style.width = "100%";
+        operatorImg.style.objectFit = "cover";
+        operatorImg.style.objectPosition = "top";
+
+        const modalContent = document.querySelector(".modal-content");
+        switch (rarity) {
+            case '6':
+                modalContent.style.backgroundColor = "#fed54a";
+                break;
+            case '5':
+                modalContent.style.backgroundColor = "#ffedcc";
+                break;
+            case '4':
+                modalContent.style.backgroundColor = "#c0a8f7";
+                break;
+            default:
+                modalContent.style.backgroundColor = "#fff";
+        }
+    }
+
+    getRarityStars(rarity) {
+        return "★".repeat(Number(rarity));
+    }
 }
 
 const gacha = new Gacha();
