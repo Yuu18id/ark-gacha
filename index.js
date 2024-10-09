@@ -41,7 +41,6 @@ class Gacha {
                 }
             }
         }
-        console.log(this.op);
     }
 
     async gacha(pull) {
@@ -60,7 +59,6 @@ class Gacha {
             const rarity = this.determineRarity(rate);
 
             const randomStar = this.op[rarity][Math.floor(Math.random() * this.op[rarity].length)];
-            console.log(randomStar);
             const get = { name: randomStar.name, img: randomStar.img, rarity: rarity[rarity.length - 1] };
             this.own[rarity].push(get);
             this.get.push(get);
@@ -97,8 +95,6 @@ class Gacha {
             div.appendChild(img);
             div.appendChild(paragraph);
             this.result.appendChild(div);
-
-            console.log(this.get);
         }
         this.showGacha(this.get);
     }
@@ -139,7 +135,6 @@ class Gacha {
                 this.currentIndex++;
                 if (this.currentIndex < list.length) {
                     this.updateModalContent(list, operatorName, operatorRarity, operatorImg);
-                    console.log(this.currentIndex);
                 } else {
                     const modal = bootstrap.Modal.getInstance(document.querySelector("#recruitment"));
                     modal.hide();
